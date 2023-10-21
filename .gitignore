@@ -1,0 +1,25 @@
+
+
+# binaries
+GC
+bin
+bounds
+findCentromeres
+fixed
+match_genes_to_bins
+simReads
+CNVcaller
+binUnsorted
+interval
+status
+testBED
+
+# data directory
+uploads
+
+# reference genomes
+hg19
+hg18
+
+
+*.*~

@@ -15,7 +15,8 @@ bm				= args[[4]]
 pseudoautosomal = args[[5]]
 
 # --
-setwd(paste('/local1/work/ginkgo/uploads/', userID, sep=''))
+# setwd(paste('/local1/work/ginkgo/uploads/', userID, sep=''))
+setwd(paste('/home/public/manuel/ginkgo/uploads/', userID, sep=''))
 maxPloidy = 6
 
 # --
@@ -30,9 +31,9 @@ w = dim(raw)[2] # Number of samples
 normal = sweep(raw+1, 2, colMeans(raw+1), '/')
 normal2 = normal
 #
-GC = read.table(paste("/local1/work/ginkgo/genomes/", genome, "/", pseudoautosomal, "/GC_", bm, sep=""), header=FALSE, sep="\t", as.is=TRUE)
+GC = read.table(paste("/home/public/manuel/ginkgo/genomes/", genome, "/", pseudoautosomal, "/GC_", bm, sep=""), header=FALSE, sep="\t", as.is=TRUE)
 #
-bounds = read.table(paste("/local1/work/ginkgo/genomes/", genome, "/", pseudoautosomal, "/bounds_", bm, sep=""), header=FALSE, sep="\t")
+bounds = read.table(paste("/home/public/manuel/ginkgo/genomes/", genome, "/", pseudoautosomal, "/bounds_", bm, sep=""), header=FALSE, sep="\t")
 final  = read.table('SegCopy', header=TRUE, sep="\t")
 fixed  = read.table('SegFixed', header=TRUE, sep="\t")
 #
@@ -178,7 +179,7 @@ if(analysisType == "cnvprofiles")
 	nbCells = length(cellIDs)
 	jpeg(filename=paste(analysisID, ".jpeg", sep=""), width=1000, height=200*nbCells)
 	# layout(matrix(c(nbCells,1), nbCells, 1, byrow=TRUE))
-	par(mfrow=c(nbCells,1)) 
+	par(mfrow=c(nbCells,1))
 
 	#
 	rowID = 0

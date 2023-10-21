@@ -2,7 +2,7 @@
 
 args<-commandArgs(TRUE)
 
-main_dir="/local1/work/ginkgo/scripts"
+main_dir="/home/public/manuel/ginkgo/scripts"
 
 genome <- args[[1]]
 user_dir <- args[[2]]
@@ -122,7 +122,7 @@ write(hc2Newick(clust2), file=paste(user_dir, "/clust2.newick", sep=""))
 command=paste("java -cp ", main_dir, "/forester_1025.jar org.forester.application.phyloxml_converter -f=nn ", user_dir, "/clust2.newick ", user_dir, "/clust2.xml", sep="");
 unlink( paste(user_dir, "/clust2.xml", sep="") );
 system(command);
-## 
+##
 
 #Plot copy number cluster
 jpeg("clust2.jpeg", width=2000, height=1400)
@@ -150,7 +150,7 @@ write(hc2Newick(clust3), file=paste(user_dir, "/clust3.newick", sep=""))
 command=paste("java -cp ", main_dir, "/forester_1025.jar org.forester.application.phyloxml_converter -f=nn ", user_dir, "/clust3.newick ", user_dir, "/clust3.xml", sep="");
 unlink( paste(user_dir, "/clust3.xml", sep="") );
 system(command);
-## 
+##
 
 #Plot correlation cluster
 jpeg("clust3.jpeg", width=2000, height=1400)
@@ -217,4 +217,3 @@ dev.off()
 statusFile<-file( paste(user_dir, "/", status, sep="") )
 writeLines(c("<?xml version='1.0'?>", "<status>", "<step>4</step>", "<processingfile>Finished</processingfile>", "<percentdone>100</percentdone>", "<tree>clust.xml</tree>", "</status>"), statusFile)
 close(statusFile)
-

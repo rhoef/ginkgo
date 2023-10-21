@@ -12,7 +12,7 @@
 minPloidy   = 1.5
 maxPloidy   = 6
 minBinWidth = 5
-main_dir="/local1/work/ginkgo/scripts"
+main_dir="/home/public/manuel/ginkgo/scripts"
 
 if (!file.exists(main_dir)) {
   # Get main_dir from full commandArgs
@@ -68,7 +68,7 @@ setwd(user_dir)
 raw    = read.table(dat, header=TRUE, sep="\t")
 ploidy = rbind(c(0,0), c(0,0))
 if (f == 1 | f == 2) {
-  ploidy = read.table(facs, header=FALSE, sep="\t", as.is=TRUE)  
+  ploidy = read.table(facs, header=FALSE, sep="\t", as.is=TRUE)
 }
 
 # Remove bad bins
@@ -171,7 +171,7 @@ for(k in 1:w)
 
   # Calculate normalized for current cell (previous values of normal seem wrong)
   lowess.gc = function(jtkx, jtky) {
-    jtklow = lowess(jtkx, log(jtky), f=0.05); 
+    jtklow = lowess(jtkx, log(jtky), f=0.05);
     jtkz = approx(jtklow$x, jtklow$y, jtkx)
     return(exp(log(jtky) - jtkz$y))
   }
@@ -211,7 +211,7 @@ for(k in 1:w)
   # -- Determine Copy Number (SoS Method)
   # ----------------------------------------------------------------------------
 
-  # Determine Copy Number     
+  # Determine Copy Number
   outerRaw         = fixed[,k] %o% CNgrid
   outerRound       = round(outerRaw)
   outerDiff        = (outerRaw - outerRound) ^ 2
@@ -241,7 +241,7 @@ for(k in 1:w)
 
   # Plot Distribution of Read Coverage
   jpeg(filename=paste(lab[k], "_dist.jpeg", sep=""), width=3000, height=750)
-  
+
   top=round(quantile(raw[,k], c(.995))[[1]])
   rectangles1=data.frame(pos[seq(1,nrow(pos), 2),])
   rectangles2=data.frame(pos[seq(2,nrow(pos), 2),])
@@ -251,7 +251,7 @@ for(k in 1:w)
 
   plot1 = ggplot() +
     geom_rect(data=rectangles1, aes(xmin=X1, xmax=X2, ymin=-top*.1, ymax=top), fill='gray85', alpha=0.75) +
-    geom_rect(data=rectangles2, aes(xmin=X1, xmax=X2, ymin=-top*.1, ymax=top), fill='gray75', alpha=0.75) + 
+    geom_rect(data=rectangles2, aes(xmin=X1, xmax=X2, ymin=-top*.1, ymax=top), fill='gray75', alpha=0.75) +
     geom_point(data=main, aes(x=x, y=y), size=3) +
     geom_point(data=outliers, aes(x=x, y=y), shape=5, size=4) +
     geom_text(data=anno, aes(x=x, y=y, label=chrom), size=12) +
@@ -275,7 +275,7 @@ for(k in 1:w)
   jpeg(filename=paste(lab[k], "_counts.jpeg", sep=""), width=2500, height=1500)
     par(mar = c(7.0, 7.0, 7.0, 3.0))
 
-    temp=sort(raw[,k])[round(l*.01) : (l-round(l*.01))] 
+    temp=sort(raw[,k])[round(l*.01) : (l-round(l*.01))]
     reads = hist(temp, breaks=100, plot=FALSE)
     # plot(reads, col='black', main=paste("Frequency of Bin Counts for Sample ", lab[k], "\n(both tails trimmed 1%)", sep=""), xlab="Read Count (reads/bin)", xaxt="n", cex.main=3, cex.axis=2, cex.lab=2)
     plot(reads, col='black', main=paste("Frequency of Bin Counts for Sample ", lab[k], "\n(both tails trimmed 1%)", sep=""), xlab="Read Count (reads/bin)", cex.main=3, cex.axis=2, cex.lab=2)
@@ -293,7 +293,7 @@ for(k in 1:w)
     clip(tu[1], mean(temp) - 2*sd(temp), tu[3], tu[4])
     plot(reads, col='gray90', add=TRUE)
     clip(mean(temp) + 2*sd(temp), tu[2], tu[3], tu[4])
-    plot(reads, col='gray90', add=TRUE) 
+    plot(reads, col='gray90', add=TRUE)
     legend("topright", inset=.05, legend=c("mean", "< 1σ", "> 1σ", "> 2σ"), fill=c("black", "gray50", "gray75", "gray90"), cex=2.5)
   dev.off()
 
@@ -302,7 +302,7 @@ for(k in 1:w)
 
   nReads=sum(raw[,k])
   uniq=unique(sort(raw[,k]))
-  
+
   lorenz=matrix(0, nrow=length(uniq), ncol=2)
   a=c(length(which(raw[,k]==0)), tabulate(raw[,k], nbins=max(raw[,k])))
   b=a*(0:(length(a)-1))
@@ -347,7 +347,7 @@ for(k in 1:w)
   low = lowess(GC[,1], log(normal2[,k]), f=0.05)
   app = approx(low$x, low$y, GC[,1])
   cor = exp(log(normal2[,k]) - app$y)
-  
+
   uncorrected = data.frame(x=GC[,1], y=log(normal2[,k]))
   corrected = data.frame(x=GC[,1], y=log(cor))
   fit = data.frame(x=app$x, y=app$y)
@@ -407,10 +407,10 @@ for(k in 1:w)
   lim = cbind(c(seq(0,5000,500), 1000000), c(50, 100, 100, 200, 250, 400, 500, 500, 600, 600, 750, 1000))
   step = lim[which(top<lim[,1])[1],]
   minSoS = data.frame(x=CNmult[1,k], y=CNerror[1,k])
-  # If a FACS file is provided, use CNerror_facs, since CN multiplier could be 
+  # If a FACS file is provided, use CNerror_facs, since CN multiplier could be
   # outside the CNgrid range, which would cause "which(CNgrid==CN)" to error out
   if(f == 1) {
-    bestSoS = data.frame(x=CN, y=CNerror_facs)    
+    bestSoS = data.frame(x=CN, y=CNerror_facs)
   } else {
     bestSoS = data.frame(x=CN, y=outerColsums[which(CNgrid==CN),k])
   }
@@ -506,7 +506,7 @@ for (i in 1:nrow(pos))
   }
 }
 
-# 
+#
 loc2[nrow(loc2),2]=loc2[nrow(loc2)-1,3]+1
 colnames(loc2)=c("CHR","START", "END")
 
@@ -544,7 +544,7 @@ if(cm == "NJ")
   write.tree(clust, file=paste(user_dir, "/clust.newick", sep=""))
 } else {
   clust = hclust(d, method = cm)
-  clust$labels = lab  
+  clust$labels = lab
   write(hc2Newick(clust), file=paste(user_dir, "/clust.newick", sep=""))
 }
 
@@ -581,7 +581,7 @@ if(cm == "NJ"){
   write.tree(clust2, file=paste(user_dir, "/clust2.newick", sep=""))
 }else{
   clust2 = hclust(d2, method = cm)
-  clust2$labels = lab  
+  clust2$labels = lab
   write(hc2Newick(clust2), file=paste(user_dir, "/clust2.newick", sep=""))
 }
 
@@ -616,7 +616,7 @@ if(cm == "NJ"){
   write.tree(clust3, file=paste(user_dir, "/clust3.newick", sep=""))
 }else{
   clust3 = hclust(d3, method = cm)
-  clust3$labels = lab  
+  clust3$labels = lab
   write(hc2Newick(clust3), file=paste(user_dir, "/clust3.newick", sep=""))
 }
 
@@ -624,7 +624,7 @@ if(cm == "NJ"){
 command=paste("java -cp ", main_dir, "/forester_1025.jar org.forester.application.phyloxml_converter -f=nn ", user_dir, "/clust3.newick ", user_dir, "/clust3.xml", sep="");
 unlink( paste(user_dir, "/clust3.xml", sep="") );
 system(command);
-### 
+###
 
 #Plot correlation cluster
 jpeg("clust3.jpeg", width=2000, height=1400)
@@ -677,29 +677,28 @@ if(cm == "NJ"){
   clust3 = phylo2hclust(clust3)
 }
 
-write("Making heatRaw.jpeg", stderr())
-jpeg("heatRaw.jpeg", width=2000, height=1400)
-heatmap.2(t(rawBPs), Colv=FALSE, Rowv=as.dendrogram(clust), margins=c(5,20), dendrogram="row", trace="none", xlab="Bins", ylab="Samples", cex.main=2, cex.axis=1.5, cex.lab=1.5, cexCol=.001, col=bluered(2))
-dev.off()
+# write("Making heatRaw.jpeg", stderr())
+# jpeg("heatRaw.jpeg", width=2000, height=1400)
+# heatmap.2(t(rawBPs), Colv=FALSE, Rowv=as.dendrogram(clust), margins=c(5,20), dendrogram="row", trace="none", xlab="Bins", ylab="Samples", cex.main=2, cex.axis=1.5, cex.lab=1.5, cexCol=.001, col=bluered(2))
+# dev.off()
 
-write("Making heatNorm.jpeg", stderr())
-step=quantile(fixedBPs, c(.98))[[1]]
-jpeg("heatNorm.jpeg", width=2000, height=1400)
-heatmap.2(t(fixedBPs), Colv=FALSE, Rowv=as.dendrogram(clust), margins=c(5,20), dendrogram="row", trace="none", xlab="Bins", ylab="Samples", cex.main=2, cex.axis=1.5, cex.lab=1.5, cexCol=.001, col=bluered(15), breaks=seq(0,step,step/15))
-dev.off()
+# write("Making heatNorm.jpeg", stderr())
+# step=quantile(fixedBPs, c(.98))[[1]]
+# jpeg("heatNorm.jpeg", width=2000, height=1400)
+# heatmap.2(t(fixedBPs), Colv=FALSE, Rowv=as.dendrogram(clust), margins=c(5,20), dendrogram="row", trace="none", xlab="Bins", ylab="Samples", cex.main=2, cex.axis=1.5, cex.lab=1.5, cexCol=.001, col=bluered(15), breaks=seq(0,step,step/15))
+# dev.off()
 
-write("Making heatCN.jpeg", stderr())
-step=min(20, quantile(finalBPs, c(.98))[[1]])
-jpeg("heatCN.jpeg", width=2000, height=1400)
-heatmap.2(t(finalBPs), Colv=FALSE, Rowv=as.dendrogram(clust2), margins=c(5,20), dendrogram="row", trace="none", xlab="Bins", ylab="Samples", cex.main=2, cex.axis=1.5, cex.lab=1.5, cexCol=.001, col=colorRampPalette(c("white","green","green4","violet","purple"))(15), breaks=seq(0,step,step/15))
-dev.off()
+# write("Making heatCN.jpeg", stderr())
+# step=min(20, quantile(finalBPs, c(.98))[[1]])
+# jpeg("heatCN.jpeg", width=2000, height=1400)
+# heatmap.2(t(finalBPs), Colv=FALSE, Rowv=as.dendrogram(clust2), margins=c(5,20), dendrogram="row", trace="none", xlab="Bins", ylab="Samples", cex.main=2, cex.axis=1.5, cex.lab=1.5, cexCol=.001, col=colorRampPalette(c("white","green","green4","violet","purple"))(15), breaks=seq(0,step,step/15))
+# dev.off()
 
-write("Making heatCor.jpeg", stderr())
-jpeg("heatCor.jpeg", width=2000, height=1400)
-heatmap.2(t(finalBPs), Colv=FALSE, Rowv=as.dendrogram(clust3), margins=c(5,20), dendrogram="row", trace="none", xlab="Bins", ylab="Samples", cex.main=2, cex.axis=1.5, cex.lab=1.5, cexCol=.001, col=colorRampPalette(c("white","steelblue1","steelblue4","orange","sienna3"))(15), breaks=seq(0,step,step/15))
-dev.off()
+# write("Making heatCor.jpeg", stderr())
+# jpeg("heatCor.jpeg", width=2000, height=1400)
+# heatmap.2(t(finalBPs), Colv=FALSE, Rowv=as.dendrogram(clust3), margins=c(5,20), dendrogram="row", trace="none", xlab="Bins", ylab="Samples", cex.main=2, cex.axis=1.5, cex.lab=1.5, cexCol=.001, col=colorRampPalette(c("white","steelblue1","steelblue4","orange","sienna3"))(15), breaks=seq(0,step,step/15))
+# dev.off()
 
 statusFile=file( paste(user_dir, "/", status, sep="") )
 writeLines(c("<?xml version='1.0'?>", "<status>", "<step>3</step>", paste("<processingfile>Finished</processingfile>", sep=""), paste("<percentdone>100</percentdone>", sep=""), "<tree>clust.xml</tree>", "</status>"), statusFile)
 close(statusFile)
-

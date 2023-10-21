@@ -8,7 +8,7 @@
 # -- Variables
 # ------------------------------------------------------------------------------
 
-home=/local1/work/ginkgo
+home=/home/public/manuel/ginkgo
 dir=${home}/uploads/${1}
 source ${dir}/config
 distMet=$distMeth
@@ -17,6 +17,16 @@ touch $dir/index.html
 inFile=list
 statFile=status.xml
 genome=${home}/genomes/${chosen_genome}
+
+function remove_tmp_files {
+  # Remove all results and temporary files from processing directory
+  pushd $1
+  rm -f *_mapped *.jpeg *.newick *.xml $1/*.cnv Seg* /results.txt rm -f CNV1 CNV2 *.pdf *.html *.pdf ploidyDummy.txt data
+  popd
+}
+
+
+
 
 if [ "$rmpseudoautosomal" == "1" ];
 then
@@ -32,12 +42,12 @@ fi
 if [ "$f" == "0" ]; then
   touch ${dir}/ploidyDummy.txt
   facs=ploidyDummy.txt
-else 
+else
   # In case upload file with \r instead of \n (Mac, Windows)
   tr '\r' '\n' < ${dir}/${facs} > ${dir}/quickTemp
   mv ${dir}/quickTemp ${dir}/${facs}
-  # 
-  sed "s/.bed//g" ${dir}/${facs} | sort -k1,1 | awk '{print $1"\t"$2}' > ${dir}/quickTemp 
+  #
+  sed "s/.bed//g" ${dir}/${facs} | sort -k1,1 | awk '{print $1"\t"$2}' > ${dir}/quickTemp
   mv ${dir}/quickTemp ${dir}/${facs}
 fi
 
@@ -51,7 +61,8 @@ if [ "$init" == "1" ];
 then
 
   # Clean directory
-  rm -f ${dir}/*_mapped ${dir}/*.jpeg ${dir}/*.newick ${dir}/*.xml ${dir}/*.cnv ${dir}/Seg* ${dir}/results.txt
+  remove_tmp_files $dir
+  # rm -f ${dir}/*_mapped ${dir}/*.jpeg ${dir}/*.newick ${dir}/*.xml ${dir}/*.cnv ${dir}/Seg* ${dir}/results.txt
 
   # Map user bed files to appropriate bins
   cnt=0
@@ -71,7 +82,7 @@ then
       fi
       ${home}/scripts/binUnsorted ${genome}/${binMeth} `wc -l < ${genome}/${binMeth}` <(zcat -cd ${dir}/${file}) `echo ${file} | awk -F ".bed" '{print $1}'` ${dir}/${file}_mapped
 
-    # 
+    #
     else
       firstLineChr=$( head -n 1 ${dir}/${file} | cut -f1 | grep "chr")
       if [[ "${firstLineChr}" == "" ]];
@@ -86,7 +97,7 @@ then
     cnt=$(($cnt+1))
   done < ${dir}/${inFile}
 
-  # Concatenate binned reads to central file  
+  # Concatenate binned reads to central file
   paste ${dir}/*_mapped > ${dir}/data
   rm -f ${dir}/*_mapped ${dir}/*_binned
 

@@ -10,22 +10,18 @@
 
 home=/home/public/manuel/ginkgo
 dir=${home}/uploads/${1}
+
+# processing parameters
 source ${dir}/config
+source ${home}/scripts/ginkgolib.sh
+
+
 distMet=$distMeth
 touch $dir/index.html
 
 inFile=list
 statFile=status.xml
 genome=${home}/genomes/${chosen_genome}
-
-function remove_tmp_files {
-  # Remove all results and temporary files from processing directory
-  pushd $1
-  rm -f *_mapped *.jpeg *.newick *.xml $1/*.cnv Seg* /results.txt rm -f CNV1 CNV2 *.pdf *.html *.pdf ploidyDummy.txt data
-  popd
-}
-
-
 
 
 if [ "$rmpseudoautosomal" == "1" ];
@@ -55,14 +51,12 @@ fi
 # -- Map Reads & Prepare Samples For Processing
 # ------------------------------------------------------------------------------
 
-total=`wc -l < ${dir}/${inFile}`
+total=$(wc -l < ${dir}/${inFile})
 
 if [ "$init" == "1" ];
 then
-
   # Clean directory
   remove_tmp_files $dir
-  # rm -f ${dir}/*_mapped ${dir}/*.jpeg ${dir}/*.newick ${dir}/*.xml ${dir}/*.cnv ${dir}/Seg* ${dir}/results.txt
 
   # Map user bed files to appropriate bins
   cnt=0
@@ -71,27 +65,24 @@ then
     ${home}/scripts/status ${dir}/${statFile} 1 $file $cnt $total
 
     # Unzip gzip files if necessary
-    if [[ "${file}" =~ \.gz$ ]];
-    then
-      firstLineChr=$(zcat ${dir}/${file} | head -n 1 | cut -f1 | grep "chr")
-      if [[ "${firstLineChr}" == "" ]];
-      then
-        awk '{print "chr"$0}' <(zcat ${dir}/${file}) > ${dir}/${file}_tmp
-        mv ${dir}/${file}_tmp ${dir}/${file/.gz/}
-        gzip -f ${dir}/${file/.gz/}
-      fi
-      ${home}/scripts/binUnsorted ${genome}/${binMeth} `wc -l < ${genome}/${binMeth}` <(zcat -cd ${dir}/${file}) `echo ${file} | awk -F ".bed" '{print $1}'` ${dir}/${file}_mapped
+    if [[ "${file}" =~ \.gz$ ]]; then
+        firstLineChr=$(zcat ${dir}/${file} | head -n 1 | cut -f1 | grep "chr")
+        if [[ "${firstLineChr}" == "" ]]; then
+            awk '{print "chr"$0}' <(zcat ${dir}/${file}) > ${dir}/${file}_tmp
+            mv ${dir}/${file}_tmp ${dir}/${file/.gz/}
+            gzip -f ${dir}/${file/.gz/}
+        fi
+        ${home}/scripts/binUnsorted ${genome}/${binMeth} `wc -l < ${genome}/${binMeth}` <(zcat -cd ${dir}/${file}) `echo ${file} | awk -F ".bed" '{print $1}'` ${dir}/${file}_mapped
 
-    #
+        #
     else
-      firstLineChr=$( head -n 1 ${dir}/${file} | cut -f1 | grep "chr")
-      if [[ "${firstLineChr}" == "" ]];
-      then
-        awk '{print "chr"$0}' ${dir}/${file} > ${dir}/${file}_tmp
-        mv ${dir}/${file}_tmp ${dir}/${file}
-      fi
-      ${home}/scripts/binUnsorted ${genome}/${binMeth} `wc -l < ${genome}/${binMeth}` ${dir}/${file} `echo ${file} | awk -F ".bed" '{print $1}'` ${dir}/${file}_mapped
-      gzip ${dir}/${file}
+        firstLineChr=$( head -n 1 ${dir}/${file} | cut -f1 | grep "chr")
+        if [[ "${firstLineChr}" == "" ]]; then
+            awk '{print "chr"$0}' ${dir}/${file} > ${dir}/${file}_tmp
+            mv ${dir}/${file}_tmp ${dir}/${file}
+        fi
+        ${home}/scripts/binUnsorted ${genome}/${binMeth} `wc -l < ${genome}/${binMeth}` ${dir}/${file} `echo ${file} | awk -F ".bed" '{print $1}'` ${dir}/${file}_mapped
+        gzip ${dir}/${file}
     fi
 
     cnt=$(($cnt+1))
